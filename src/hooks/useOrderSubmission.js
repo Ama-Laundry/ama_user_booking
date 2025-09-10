@@ -9,20 +9,33 @@ export default function useOrderSubmission() {
     setLoading(true);
     setError(null);
 
+    // Map pickup_method to valid ACF values
+    const pickupMethodLabel =
+      orderData.fields?.pickup_method === "inside"
+        ? "Inside Room"
+        : "Outside Door";
+
     const payload = {
-      title: `Order for Room ${orderData.roomNumber}`, // Optional but useful
+      title:
+        orderData.title ||
+        `Laundry Order for Room ${orderData.fields?.room_number || "Unknown"}`,
+      status: "publish",
       acf: {
-        room_number: orderData.roomNumber,
-        service_id: orderData.serviceIds,
-        pickup_method: orderData.pickupMethod,
-        slot_id: orderData.slotId,
-        camp_name: orderData.campName,
-        customer_name: orderData.customerName,
-        Special_Instructions: orderData.specialInstructions,
+        room_number: orderData.fields?.room_number,
+        service_id: orderData.fields?.service_id,
+        pickup_method: pickupMethodLabel, // ✅ Corrected value
+        slot_id: orderData.fields?.slot_id,
+        camp_name: orderData.fields?.camp_name,
+        customer_name: orderData.fields?.customer_name,
+        Special_Instructions: orderData.fields?.special_instructions,
+        total_price: orderData.fields?.total_price,
+        services: orderData.fields?.services,
+        camp_id: orderData.fields?.camp_id,
+        pickup_slot: orderData.fields?.pickup_slot,
       },
     };
 
-    console.log("Submitting order:", payload); // ✅ Confirm structure
+    console.log("Submitting order:", payload);
 
     try {
       const response = await fetch(
