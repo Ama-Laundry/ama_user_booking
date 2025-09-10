@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+/* Base layout */
+@layer base {
+  body {
+    font-family: "Poppins", sans-serif;
+    @apply text-black min-h-screen overflow-x-hidden antialiased relative;
+    background: linear-gradient(
+      120deg,
+      #9069fa,
+      #00aaff,
+      #10ecfc,
+      #00cfff,
+      #00aaff,
+      #a77fff,
+      #d16fff
+    );
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    animation: gradientShift 20s ease infinite;
+    padding: 3rem 1.5rem 6rem 1.5rem;
+  }
+
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+/* Form container */
+.form-wrapper {
+  @apply relative border border-white/30 shadow-cyan-100 shadow-2xl rounded-2xl p-4 md:p-8 space-y-8;
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(60px);
+  min-height: 800px;
+}
+
+/* Content wrapper */
+.wrap {
+  @apply relative z-10 w-full max-w-6xl mx-auto px-4;
+}
+
+/* Header */
+header {
+  @apply text-center mb-12;
+}
+
+.logo {
+  @apply w-28 h-28 mx-auto rounded-3xl grid place-items-center font-extrabold tracking-wide shadow-xl bg-white/90 text-black;
+}
+
+h1 {
+  @apply text-[clamp(26px,4vw,36px)] my-6 font-bold tracking-tight leading-tight;
+}
+
+.sub {
+  @apply text-gray-700 text-base mt-2;
+}
+
+/* Form content */
+.grid.two {
+  @apply grid gap-8 md:grid-cols-2;
+}
+
+.field {
+  @apply grid gap-2;
+}
+
+label {
+  @apply font-semibold text-gray-900 px-1 text-base md:text-2xl;
+}
+
+.hint {
+  @apply text-gray-600 text-xs px-1;
+}
+
+input[type="text"],
+select,
+textarea {
+  @apply w-full bg-white/60 border border-white/50 text-black px-4 py-3 rounded-xl outline-none transition-all duration-200 placeholder:text-gray-700;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+  @apply border-white/80 ring-4 ring-white/40;
+}
+
+/* Service Category */
+.category {
+  @apply grid gap-8 mt-12;
+}
+
+.category h2 {
+  @apply text-2xl font-bold text-black mb-4 pl-4 border-l-4 border-black;
+}
+
+.service-list {
+  @apply grid gap-8;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+/* Service Card Item */
+.service-card-item {
+  /* Adjusted padding for mobile */
+  @apply bg-white/50 border border-white/30 rounded-xl flex flex-col shadow-lg p-4 md:p-6 h-full transition-transform hover:scale-[1.02];
+}
+
+.service-card-item .service-img {
+  @apply w-full h-44 object-cover rounded-lg mb-4;
+}
+
+.service-card-item .service-info {
+  @apply flex flex-col gap-3 flex-grow;
+}
+
+.service-card-item .service-info h4 {
+  @apply font-semibold text-black text-lg leading-snug;
+}
+
+.price-counter-row {
+  @apply flex justify-between items-center w-full mt-4;
+}
+
+.service-card-item .price {
+  /* Made font size responsive */
+  @apply font-bold text-black text-lg md:text-xl;
+}
+
+/* Quantity Controls */
+.quantity-control {
+  /* Adjusted padding for mobile */
+  @apply flex items-center bg-black/10 rounded-lg px-1 md:px-2 py-1;
+}
+
+.quantity-control button {
+  /* Mobile-first: smaller size, then larger on medium screens and up */
+  @apply w-8 h-8 text-lg md:w-10 md:h-10 md:text-xl;
+
+  /* Other base styles */
+  @apply bg-transparent text-black rounded-lg font-bold cursor-pointer transition-colors hover:bg-black/20 disabled:text-gray-500 disabled:cursor-not-allowed flex items-center justify-center leading-none;
+}
+
+.quantity-control input {
+  /* Mobile-first: smaller size, then larger on medium screens and up */
+  @apply w-8 text-base md:w-12 md:text-lg;
+
+  /* Other base styles */
+  @apply text-center text-black bg-transparent border-none outline-none font-bold;
+}
+
+/* Pickup Method Section */
+.pickup {
+  @apply grid gap-6 mt-12;
+}
+
+.pickup h2 {
+  @apply text-xl font-bold text-black mb-2 pl-4 border-l-4 border-black;
+}
+
+.pickup .option {
+  @apply flex items-center gap-3 bg-white/30 border border-white/50 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:bg-white/40;
+}
+
+.pickup .option input[type="radio"] {
+  @apply w-5 h-5 accent-black cursor-pointer;
+}
+
+.pickup .option label {
+  @apply text-black font-medium text-sm;
+}
+
+/* Confirmation Summary */
+.confirm {
+  @apply bg-white/30 border border-white/50 rounded-xl p-6 space-y-4 shadow-md mt-12;
+}
+
+.confirm h2 {
+  @apply text-xl font-bold text-black mb-4 pl-4 border-l-4 border-black;
+}
+
+.confirm .row {
+  @apply flex justify-between items-center text-sm text-black;
+}
+
+.confirm .row strong {
+  @apply font-semibold;
+}
+
+.confirm .total {
+  @apply text-lg font-bold text-black mt-2;
+}
+
+/* Totals Section */
+.totals {
+  @apply bg-white/20 border border-white/30 rounded-xl p-6 grid gap-3 mt-8;
+}
+
+.totals-summary strong {
+  @apply text-gray-800 text-base;
+}
+
+/* Buttons */
+button,
+.pay-btn {
+  @apply inline-flex items-center justify-center border-none rounded-xl px-6 py-3 font-bold tracking-wide shadow-lg transition-all duration-200 text-white bg-green-500;
+}
+
+.pay-btn:hover {
+  @apply bg-green-600/90;
+}
+
+.pay-btn.alt {
+  @apply bg-green-500;
+}
+
+.pay-btn.alt:hover {
+  @apply bg-green-700/90;
+}
+
+/* Brand Stripe */
+.brand-stripe {
+  @apply h-1.5 rounded-full mt-8 mx-auto max-w-sm bg-black;
+}
