@@ -13,12 +13,17 @@ function ServiceListItem({ item, onAddToCart }) {
     onAddToCart(item, quantity);
   };
 
+  // Safely access potentially nested properties
+  const itemName = item.title?.rendered || 'Unnamed Service';
+  const itemPrice = item.acf?.price || 0;
+  const itemImage = item.acf?.image || 'default-image.jpg'; // Provide a fallback image
+
   return (
     <div className="service-list-item">
-      <img src={item.image} alt={item.name} className="item-image" />
+      <img src={itemImage} alt={itemName} className="item-image" />
       <div className="item-details">
-        <h4 className="item-name">{item.name}</h4>
-        <p className="item-price">Price: ৳{item.price}</p>
+        <h4 className="item-name">{itemName}</h4>
+        <p className="item-price">Price: ৳{itemPrice}</p>
         <div className="item-controls">
           <div className="quantity-selector">
             <button type="button" onClick={handleDecrement}>-</button>
