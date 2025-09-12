@@ -7,39 +7,44 @@ function Totals({
   specialInstructions,
   onRemoveItem,
 }) {
-  const total = selectedItems.reduce(
-    (sum, entry) => sum + entry.item.price * entry.quantity,
-    0
-  );
+  const total = selectedItems.reduce((sum, entry) => {
+    // ✅ CORRECTED: Safely access the price from the 'acf' object
+    const price = entry.item?.acf?.price || 0;
+    return sum + price * entry.quantity;
+  }, 0);
 
   return (
     <div className="totals">
       <h3 className="text-lg font-bold mb-4">Booking Summary</h3>
       <div className="grid gap-2">
-        {selectedItems.map((entry) => (
-          <div
-            key={entry.item.id}
-            className="flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{entry.item.name}</p>
-              <p className="text-sm text-gray-500">
-                {entry.quantity} x ${entry.item.price.toFixed(2)}
-              </p>
+        {selectedItems.map((entry) => {
+          // ✅ CORRECTED: Safely access the price for display
+          const itemPrice = entry.item?.acf?.price || 0;
+          return (
+            <div
+              key={entry.item.id}
+              className="flex justify-between items-center"
+            >
+              <div>
+                <p className="font-semibold">{entry.item.title?.rendered || 'Unnamed Item'}</p>
+                <p className="text-sm text-gray-500">
+                  {entry.quantity} x ${itemPrice.toFixed(2)}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <p className="font-semibold mr-4">
+                  ${(itemPrice * entry.quantity).toFixed(2)}
+                </p>
+                <button
+                  onClick={() => onRemoveItem(entry.item.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
-            <div className="flex items-center">
-              <p className="font-semibold mr-4">
-                ${(entry.item.price * entry.quantity).toFixed(2)}
-              </p>
-              <button
-                onClick={() => onRemoveItem(entry.item.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <hr className="my-4" />
       <div className="grid gap-2">
