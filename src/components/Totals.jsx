@@ -1,78 +1,84 @@
-function Totals({
+import React from "react";
+
+export default function Totals({
   selectedItems,
   room,
   camp,
   slot,
   pickup,
-  specialInstructions,
   onRemoveItem,
+  specialInstructions,
 }) {
-  const total = selectedItems.reduce(
-    (sum, entry) => sum + entry.item.price * entry.quantity,
+  if (selectedItems.length === 0) {
+    return (
+      <div className="totals">
+        <h2 className="text-xl font-semibold mb-4">Your Order</h2>
+        <p>No items selected yet.</p>
+      </div>
+    );
+  }
+
+  // ✅ FIX: Filter out any items that might be malformed before reducing.
+  const validItems = selectedItems.filter((entry) => entry && entry.item);
+
+  const total = validItems.reduce(
+    (acc, { item, quantity }) => acc + item.price * quantity,
     0
   );
 
   return (
     <div className="totals">
-      <h3 className="text-lg font-bold mb-4">Booking Summary</h3>
-      <div className="grid gap-2">
-        {selectedItems.map((entry) => (
-          <div
-            key={entry.item.id}
-            className="flex justify-between items-center"
-          >
-            <div>
-              <p className="font-semibold">{entry.item.name}</p>
-              <p className="text-sm text-gray-500">
-                {entry.quantity} x ${entry.item.price.toFixed(2)}
-              </p>
+      <h2 className="text-xl font-semibold mb-4">Your Order</h2>
+      <div className="order-summary">
+        <p>
+          <strong>Camp:</strong> {camp}
+        </p>
+        <p>
+          <strong>Room:</strong> {room}
+        </p>
+        <p>
+          <strong>Pickup Slot:</strong> {slot}
+        </p>
+        <p>
+          <strong>Pickup Method:</strong> {pickup}
+        </p>
+        {specialInstructions && (
+          <p>
+            <strong>Instructions:</strong> {specialInstructions}
+          </p>
+        )}
+      </div>
+
+      <hr className="my-4" />
+
+      <h3 className="text-lg font-semibold mb-2">Selected Items:</h3>
+      <ul className="list-disc pl-5 space-y-2">
+        {/* ✅ FIX: Filter out any items that might be malformed before mapping. */}
+        {validItems.map(({ item, quantity }) => (
+          <li key={item.id} className="item">
+            <div className="details">
+              <span className="font-semibold">{item.title}</span>
+              <span className="quantity"> (x{quantity})</span>
             </div>
-            <div className="flex items-center">
-              <p className="font-semibold mr-4">
-                ${(entry.item.price * entry.quantity).toFixed(2)}
-              </p>
+            <div className="actions">
+              <span>${(item.price * quantity).toFixed(2)}</span>
               <button
-                onClick={() => onRemoveItem(entry.item.id)}
-                className="text-red-500 hover:text-red-700"
+                type="button"
+                onClick={() => onRemoveItem(item.id)}
+                className="remove-btn"
               >
                 Remove
               </button>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
+
       <hr className="my-4" />
-      <div className="grid gap-2">
-        <div className="flex justify-between">
-          <p className="font-semibold">Camp:</p>
-          <p>{camp}</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="font-semibold">Room:</p>
-          <p>{room}</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="font-semibold">Pickup Slot:</p>
-          <p>{slot}</p>
-        </div>
-        <div className="flex justify-between">
-          <p className="font-semibold">Pickup Method:</p>
-          <p>{pickup}</p>
-        </div>
-        {specialInstructions && (
-          <div className="flex justify-between">
-            <p className="font-semibold">Special Instructions:</p>
-            <p>{specialInstructions}</p>
-          </div>
-        )}
-      </div>
-      <hr className="my-4" />
-      <div className="flex justify-between font-bold text-xl">
-        <p>Total:</p>
-        <p>${total.toFixed(2)}</p>
+
+      <div className="text-right">
+        <p className="text-xl font-bold">Total: ${total.toFixed(2)}</p>
       </div>
     </div>
   );
 }
-
-export default Totals;

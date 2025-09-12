@@ -4,10 +4,11 @@ import { filterBySlug } from "../utils/filterBySlug";
 
 export default function ServiceList() {
   const { services, loading } = useServices();
-  // ✅ FIX: Use the correct "uniform" slug for filtering.
-  const uniforms = filterBySlug(services, "uniform");
 
+  // ✅ FIX: Added a loading check before filtering
   if (loading) return <p>Loading services...</p>;
+
+  const uniforms = filterBySlug(services, "uniform");
 
   return (
     <div className="grid grid-cols-2 gap-4">

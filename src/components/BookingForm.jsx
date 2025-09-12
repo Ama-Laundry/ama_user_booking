@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import useServices from "src/hooks/useServices";
 import usePickupSlots from "src/hooks/usePickupSlots";
 import useOrderSubmission from "src/hooks/useOrderSubmission";
-import useCamps from "src/hooks/useCamps"; // Import the useCamps hook
+import useCamps from "src/hooks/useCamps";
 import ServiceCategory from "src/components/ServiceCategory";
 import PickupOptions from "src/components/PickupOptions";
 import Totals from "src/components/Totals";
@@ -11,12 +11,12 @@ import Confirmation from "src/components/Confirmation";
 function BookingForm() {
   const { services, loading: servicesLoading } = useServices();
   const slots = usePickupSlots();
-  const { camps, loading: campsLoading, error: campsError } = useCamps(); // Use the camps hook
+  const { camps, loading: campsLoading, error: campsError } = useCamps();
 
   const [room, setRoom] = useState("");
   const [slot, setSlot] = useState("");
   const [pickup, setPickup] = useState("inside");
-  const [campId, setCampId] = useState(""); // State for the selected camp
+  const [campId, setCampId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
@@ -29,19 +29,17 @@ function BookingForm() {
     data: orderData,
   } = useOrderSubmission();
 
-  const uniforms = services.filter((s) => s.slug === "uniform");
-  const other = services.filter((s) => s.slug === "cloth");
+  const uniforms = services ? services.filter((s) => s.slug === "uniform") : [];
+  const other = services ? services.filter((s) => s.slug === "cloth") : [];
 
   const total = useMemo(
     () =>
-      selectedItems.reduce(
-        (sum, entry) => sum + entry.item.price * entry.quantity,
-        0
-      ),
+      selectedItems
+        .filter((entry) => entry && entry.item) // Safety check
+        .reduce((sum, entry) => sum + entry.item.price * entry.quantity, 0),
     [selectedItems]
   );
 
-  // Automatically select the first camp once the list is loaded
   useEffect(() => {
     if (camps && camps.length > 0 && !campId) {
       setCampId(camps[0].id);
@@ -94,7 +92,7 @@ function BookingForm() {
 
     const servicesDetailsPayload = selectedItems.map((entry) => ({
       id: entry.item.id,
-      name: entry.item.name,
+      name: entry.item.title, // ✅ FIX: Changed from `name` to `title` to match your data.
       quantity: entry.quantity,
       price: entry.item.price,
     }));
@@ -126,6 +124,8 @@ function BookingForm() {
 
   return (
     <form onSubmit={handleSubmit} className="form-wrapper">
+      {/* ... Rest of the JSX remains the same as my previous answer ... */}
+      {/* It should already include the checks for `services`, `camps`, and `slots` */}
       <div className="relative z-10 flex flex-col gap-8">
         <div className="grid two">
           <div className="field">
@@ -140,11 +140,12 @@ function BookingForm() {
               <option value="" disabled>
                 {campsLoading ? "Loading camps..." : "Select a camp"}
               </option>
-              {camps.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {camps &&
+                camps.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
             </select>
             {campsError && (
               <p className="text-red-500 text-sm mt-1">{campsError}</p>
@@ -184,11 +185,12 @@ function BookingForm() {
               <option value="" disabled>
                 Select a time slot
               </option>
-              {slots.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.time}
-                </option>
-              ))}
+              {slots &&
+                slots.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.time}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -230,8 +232,8 @@ function BookingForm() {
             <Totals
               selectedItems={selectedItems}
               room={room}
-              camp={camps.find((c) => c.id == campId)?.name || ""}
-              slot={slots.find((s) => s.id == slot)?.time || ""}
+              camp={camps?.find((c) => c.id == campId)?.name || ""}
+              slot={slots?.find((s) => s.id == slot)?.time || ""}
               pickup={pickup}
               specialInstructions={specialInstructions}
               onRemoveItem={handleRemoveItem}
@@ -256,8 +258,8 @@ function BookingForm() {
           <Confirmation
             orderId={orderData?.id}
             room={room}
-            camp={camps.find((c) => c.id == campId)?.name || ""}
-            slot={slots.find((s) => s.id == slot)?.time || ""}
+            camp={camps?.find((c) => c.id == campId)?.name || ""}
+            slot={slots?.find((s) => s.id == slot)?.time || ""}
             pickup={pickup}
             selectedItems={selectedItems}
             total={total}
