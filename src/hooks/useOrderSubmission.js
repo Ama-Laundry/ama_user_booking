@@ -42,6 +42,7 @@ export default function useOrderSubmission() {
         services: orderData.fields?.services,
         camp_id: orderData.fields?.camp_id,
         pickup_slot: orderData.fields?.pickup_slot,
+        order_timestamp: new Date().toLocaleString("en-AU"),
       },
     };
 
