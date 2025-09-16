@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import useServices from "src/hooks/useServices";
 import usePickupSlots from "src/hooks/usePickupSlots";
 import useOrderSubmission from "src/hooks/useOrderSubmission";
-import useCamps from "src/hooks/useCamps"; // Import the useCamps hook
+import useCamps from "src/hooks/useCamps";
 import ServiceCategory from "src/components/ServiceCategory";
 import PickupOptions from "src/components/PickupOptions";
 import Totals from "src/components/Totals";
@@ -11,12 +11,12 @@ import Confirmation from "src/components/Confirmation";
 function BookingForm() {
   const { services, loading: servicesLoading } = useServices();
   const slots = usePickupSlots();
-  const { camps, loading: campsLoading, error: campsError } = useCamps(); // Use the camps hook
+  const { camps, loading: campsLoading, error: campsError } = useCamps();
 
   const [room, setRoom] = useState("");
   const [slot, setSlot] = useState("");
   const [pickup, setPickup] = useState("inside");
-  const [campId, setCampId] = useState(""); // State for the selected camp
+  const [campId, setCampId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
@@ -41,7 +41,16 @@ function BookingForm() {
     [selectedItems]
   );
 
-  // Automatically select the first camp once the list is loaded
+  // ✅ FIX: Find the camp name based on the campId and memoize it.
+  const selectedCampName = useMemo(() => {
+    if (!campId || !camps.length) {
+      return "";
+    }
+    // Using loose equality (==) to handle string vs number comparison
+    const campObject = camps.find((c) => c.id == campId);
+    return campObject ? campObject.name : "";
+  }, [campId, camps]);
+
   useEffect(() => {
     if (camps && camps.length > 0 && !campId) {
       setCampId(camps[0].id);
@@ -99,11 +108,6 @@ function BookingForm() {
       price: entry.item.price,
     }));
 
-    const selectedSlotObject = slots.find((s) => s.id == slot);
-    const selectedSlotTime = selectedSlotObject ? selectedSlotObject.time : "";
-    const selectedCampObject = camps.find((c) => c.id == campId);
-    const selectedCampName = selectedCampObject ? selectedCampObject.name : "";
-
     const bookingPayload = {
       title: `Laundry Order for Room ${room}`,
       status: "pending",
@@ -116,7 +120,7 @@ function BookingForm() {
         service_id: selectedItems.map((entry) => entry.item.id),
         total_price: total.toFixed(2),
         camp_id: campId,
-        camp_name: selectedCampName,
+        camp_name: selectedCampName, // Use the memoized name for the payload
         customer_name: customerName,
         special_instructions: specialInstructions,
       },
@@ -227,10 +231,11 @@ function BookingForm() {
             />
           </div>
           <div className="grid gap-4 mt-4">
+            {/* ✅ FIX: Pass the camp name to the Totals component */}
             <Totals
               selectedItems={selectedItems}
               room={room}
-              camp={camps.find((c) => c.id == campId)?.name || ""}
+              camp={selectedCampName}
               slot={slots.find((s) => s.id == slot)?.time || ""}
               pickup={pickup}
               specialInstructions={specialInstructions}
@@ -253,10 +258,11 @@ function BookingForm() {
         )}
 
         <div className={`confirm ${confirmed ? "active" : ""}`}>
+          {/* ✅ FIX: Pass the camp name to the Confirmation component */}
           <Confirmation
             orderId={orderData?.id}
             room={room}
-            camp={camps.find((c) => c.id == campId)?.name || ""}
+            camp={selectedCampName}
             slot={slots.find((s) => s.id == slot)?.time || ""}
             pickup={pickup}
             selectedItems={selectedItems}

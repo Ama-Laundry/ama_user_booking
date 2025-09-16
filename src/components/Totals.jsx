@@ -8,8 +8,7 @@ function Totals({
   onRemoveItem,
 }) {
   const total = selectedItems.reduce((sum, entry) => {
-    // ✅ CORRECTED: Safely access the price from the 'acf' object
-    const price = entry.item?.acf?.price || 0;
+    const price = entry.item?.price || 0;
     return sum + price * entry.quantity;
   }, 0);
 
@@ -18,15 +17,16 @@ function Totals({
       <h3 className="text-lg font-bold mb-4">Booking Summary</h3>
       <div className="grid gap-2">
         {selectedItems.map((entry) => {
-          // ✅ CORRECTED: Safely access the price for display
-          const itemPrice = entry.item?.acf?.price || 0;
+          const itemPrice = entry.item?.price || 0;
           return (
             <div
               key={entry.item.id}
               className="flex justify-between items-center"
             >
               <div>
-                <p className="font-semibold">{entry.item.title?.rendered || 'Unnamed Item'}</p>
+                <p className="font-semibold">
+                  {entry.item.name || "Unnamed Item"}
+                </p>
                 <p className="text-sm text-gray-500">
                   {entry.quantity} x ${itemPrice.toFixed(2)}
                 </p>

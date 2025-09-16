@@ -9,7 +9,6 @@ export default function useOrderSubmission() {
     setLoading(true);
     setError(null);
 
-    // 🔖 [MARK 1] Load JWT token from .env file (VITE_GUEST_JWT_TOKEN)
     const jwtToken = import.meta.env.VITE_GUEST_JWT_TOKEN;
 
     if (!jwtToken) {
@@ -18,7 +17,6 @@ export default function useOrderSubmission() {
       return { success: false, error: "JWT token not found." };
     }
 
-    // 🔧 Format pickup method label for ACF
     const pickupMethodLabel =
       orderData.fields?.pickup_method === "inside"
         ? "Inside Room"
@@ -34,7 +32,10 @@ export default function useOrderSubmission() {
         service_id: orderData.fields?.service_id,
         pickup_method: pickupMethodLabel,
         slot_id: orderData.fields?.slot_id,
-        camp_name: orderData.fields?.camp_name,
+
+        // ✅ FIX: Send camp_name as an array of integers
+        camp_name: [parseInt(orderData.fields?.camp_id, 10)],
+
         customer_name: orderData.fields?.customer_name,
         Special_Instructions: orderData.fields?.special_instructions,
         total_price: orderData.fields?.total_price,
@@ -53,7 +54,6 @@ export default function useOrderSubmission() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // 🔖 [MARK 2] Inject JWT token into Authorization header
             Authorization: `Bearer ${jwtToken}`,
           },
           body: JSON.stringify(payload),
