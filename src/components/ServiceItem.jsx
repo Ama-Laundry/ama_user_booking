@@ -44,7 +44,7 @@ function ServiceItem({ item, quantity, onQuantityChange }) {
 
         {/* ✅ FIX: New container for price and counter */}
         <div className="price-counter-row">
-          <p className="price">৳{item.price}</p>
+          <p className="price">AUD $ {item.price}</p>
           <div className="quantity-control">
             <button
               type="button"

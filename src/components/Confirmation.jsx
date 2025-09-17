@@ -58,10 +58,10 @@ function Confirmation({
                   <div>
                     <p>{entry.item.name}</p>
                     <p className="text-sm text-gray-500">
-                      {entry.quantity} x ${entry.item.price.toFixed(2)}
+                      {entry.quantity} x AUD${entry.item.price.toFixed(2)}
                     </p>
                   </div>
-                  <p>${(entry.item.price * entry.quantity).toFixed(2)}</p>
+                  <p>AUD${(entry.item.price * entry.quantity).toFixed(2)}</p>
                 </div>
               ))}
             </div>
@@ -69,7 +69,7 @@ function Confirmation({
           <hr />
           <div className="flex justify-between font-bold text-xl">
             <p>Total:</p>
-            <p>${total.toFixed(2)}</p>
+            <p>AUD${total.toFixed(2)}</p>
           </div>
         </div>
       </div>

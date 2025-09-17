@@ -8,27 +8,21 @@ export default function ServiceCard({ item, isSelected, onSelect }) {
   return (
     // The <label> tag allows clicking anywhere on the card to select it.
     <label className={cardClassName}>
-      
       {/* This checkbox is visually hidden by your CSS but controls the selection state. */}
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={onSelect}
-      />
-      
+      <input type="checkbox" checked={isSelected} onChange={onSelect} />
+
       {/* ✅ FIX: This structure now matches your App.css file. */}
       <div className="media">
         {item.image && <img src={item.image} alt={item.name} />}
       </div>
-      
+
       <div className="content">
         {/* The <h4> tag will be styled correctly by your existing CSS. */}
         <h4>{item.name}</h4>
-        
-        {/* The <div> with class "price" will be styled correctly. */}
-        <div className="price">৳{item.price}</div>
-      </div>
 
+        {/* The <div> with class "price" will be styled correctly. */}
+        <div className="price">AUD ${item.price}</div>
+      </div>
     </label>
   );
 }

@@ -114,7 +114,7 @@ textarea:focus {
 }
 
 .service-card-item .service-img {
-  @apply w-full h-44 object-cover rounded-lg mb-4;
+  @apply w-full h-auto object-contain rounded-lg mb-4;
 }
 
 .service-card-item .service-info {

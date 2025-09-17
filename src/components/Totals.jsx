@@ -28,12 +28,12 @@ function Totals({
                   {entry.item.name || "Unnamed Item"}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {entry.quantity} x ${itemPrice.toFixed(2)}
+                  {entry.quantity} x AUD${itemPrice.toFixed(2)}
                 </p>
               </div>
               <div className="flex items-center">
                 <p className="font-semibold mr-4">
-                  ${(itemPrice * entry.quantity).toFixed(2)}
+                  AUD ${(itemPrice * entry.quantity).toFixed(2)}
                 </p>
                 <button
                   onClick={() => onRemoveItem(entry.item.id)}
@@ -74,7 +74,7 @@ function Totals({
       <hr className="my-4" />
       <div className="flex justify-between font-bold text-xl">
         <p>Total:</p>
-        <p>${total.toFixed(2)}</p>
+        <p>AUD ${total.toFixed(2)}</p>
       </div>
     </div>
   );
