@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tanja Toanim Katha - Web Developer</title>
+    <style>
+      .hero {
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #f1f5f9, #f8fafc);
+        background-size: 400% 400%; /* Needed for the animation to work */
+        animation: gradientBG 15s ease infinite;
+        color: #333; /* Dark text for contrast on light BG */
+        text-align: center;
+        position: relative;
+      }
+
+      /* Create the animation */
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1; /* Ensures text is above any other pseudo-elements */
+        max-width: 800px;
+        padding: 2rem;
+      }
+
+      .cta-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 1rem 2rem;
+        background-color: #6466f1; /* A modern purple/blue accent color */
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Tanja Toanim Katha</h1>
+        <h2>Web Developer</h2>
+        <p>Building better digital experiences, through code and strategy.</p>
+        <a href="#projects" class="cta-button">Explore My Work</a>
+      </div>
+    </section>
+    <!-- The rest of your portfolio content would go here -->
+  </body>
+</html>

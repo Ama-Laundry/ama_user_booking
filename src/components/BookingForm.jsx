@@ -110,7 +110,7 @@ function BookingForm() {
 
     const bookingPayload = {
       title: `Laundry Order for Room ${room}`,
-      status: "pending",
+      status: "publish",
       fields: {
         room_number: room,
         slot_id: slot,
