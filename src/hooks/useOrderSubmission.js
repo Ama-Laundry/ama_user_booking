@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { submitLaundryOrder } from "../utils/api"; // Import your API function
+import { submitLaundryOrder } from "../utils/api"; // Correctly import your API function
 
 export default function useOrderSubmission() {
   const [loading, setLoading] = useState(false);
@@ -10,6 +10,7 @@ export default function useOrderSubmission() {
     setLoading(true);
     setError(null);
 
+    // --- Payload creation is the same as your original code ---
     const pickupMethodLabel =
       orderData.fields?.pickup_method === "inside"
         ? "Inside Room"
@@ -39,7 +40,7 @@ export default function useOrderSubmission() {
     console.log("📦 Submitting order payload:", payload);
 
     try {
-      // Use your existing submitLaundryOrder function from api.js
+      // --- This now calls your secure api.js function ---
       const result = await submitLaundryOrder(payload);
 
       setData(result);
