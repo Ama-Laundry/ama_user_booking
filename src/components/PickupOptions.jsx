@@ -7,8 +7,8 @@ function PickupOptions({ pickup, setPickup }) {
           <input
             type="radio"
             name="pickup"
-            value="inside"
-            checked={pickup === "inside"}
+            value="Inside Room"
+            checked={pickup === "Inside Room"}
             onChange={(e) => setPickup(e.target.value)}
           />
           Pickup inside the room
@@ -17,8 +17,8 @@ function PickupOptions({ pickup, setPickup }) {
           <input
             type="radio"
             name="pickup"
-            value="outside"
-            checked={pickup === "outside"}
+            value="Outside Door"
+            checked={pickup === "Outside Door"}
             onChange={(e) => setPickup(e.target.value)}
           />
           Pickup outside, in front of the door

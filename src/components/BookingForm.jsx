@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import useServices from "src/hooks/useServices";
 import usePickupSlots from "src/hooks/usePickupSlots";
-import useOrderSubmission from "src/hooks/useOrderSubmission";
+import { useOrderSubmission } from "../hooks/useOrderSubmission";
 import useCamps from "src/hooks/useCamps";
 import ServiceCategory from "src/components/ServiceCategory";
 import PickupOptions from "src/components/PickupOptions";
@@ -23,7 +23,7 @@ function BookingForm() {
   const [specialInstructions, setSpecialInstructions] = useState("");
 
   const {
-    submitOrder,
+    submit,
     loading: isSubmitting,
     error: submissionError,
     data: orderData,
@@ -41,12 +41,10 @@ function BookingForm() {
     [selectedItems]
   );
 
-  // ✅ FIX: Find the camp name based on the campId and memoize it.
   const selectedCampName = useMemo(() => {
     if (!campId || !camps.length) {
       return "";
     }
-    // Using loose equality (==) to handle string vs number comparison
     const campObject = camps.find((c) => c.id == campId);
     return campObject ? campObject.name : "";
   }, [campId, camps]);
@@ -101,31 +99,37 @@ function BookingForm() {
       return;
     }
 
-    const servicesDetailsPayload = selectedItems.map((entry) => ({
-      id: entry.item.id,
+    // Create services array with names and details
+    const servicesDetails = selectedItems.map((entry) => ({
       name: entry.item.name,
       quantity: entry.quantity,
       price: entry.item.price,
+      total: (entry.item.price * entry.quantity).toFixed(2),
     }));
 
-    const bookingPayload = {
-      title: `Laundry Order for Room ${room}`,
-      status: "publish",
-      fields: {
-        room_number: room,
-        slot_id: slot,
-        pickup_slot: { id: pickup === "inside" ? 1 : 2, slug: pickup },
-        pickup_method: pickup,
-        services: JSON.stringify(servicesDetailsPayload),
-        service_id: selectedItems.map((entry) => entry.item.id),
-        total_price: total.toFixed(2),
-        camp_id: campId,
-        camp_name: selectedCampName, // Use the memoized name for the payload
-        customer_name: customerName,
-        special_instructions: specialInstructions,
-      },
+    // Create service names string for display
+    const serviceNames = selectedItems
+      .map((entry) => `${entry.item.name} (Qty: ${entry.quantity})`)
+      .join(", ");
+
+    // Create the order data with ALL fields including services
+    const customFieldData = {
+      room_number: room,
+      slot_id: slot,
+      pickup_method: pickup,
+      services: JSON.stringify(servicesDetails), // Make sure this is included
+      service_names: serviceNames, // And this too
+      service_id: selectedItems.map((entry) => entry.item.id), // Keep IDs for relationship
+      total_price: total.toFixed(2),
+      camp_name: campId,
+      customer_name: customerName,
+      special_instructions: specialInstructions,
+      order_status: "pending",
     };
-    await submitOrder(bookingPayload);
+
+    console.log("🔍 Order data before submission:", customFieldData);
+
+    await submit(customFieldData);
   };
 
   return (
@@ -231,7 +235,6 @@ function BookingForm() {
             />
           </div>
           <div className="grid gap-4 mt-4">
-            {/* ✅ FIX: Pass the camp name to the Totals component */}
             <Totals
               selectedItems={selectedItems}
               room={room}
@@ -258,7 +261,6 @@ function BookingForm() {
         )}
 
         <div className={`confirm ${confirmed ? "active" : ""}`}>
-          {/* ✅ FIX: Pass the camp name to the Confirmation component */}
           <Confirmation
             orderId={orderData?.id}
             room={room}

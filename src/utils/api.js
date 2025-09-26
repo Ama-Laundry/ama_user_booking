@@ -1,50 +1,50 @@
-// src/utils/api.js
-import base64 from "base-64"; // You may need to install this: npm install base-64
+/**
+ * @file Centralizes all API calls to the BFF.
+ */
 
-// These are the credentials from your .env.local file.
-// IMPORTANT: Make sure the variable names match what you have in your .env.local file.
-// They should be VITE_API_USER and VITE_API_PASSWORD based on our previous steps.
-const USERNAME = import.meta.env.VITE_API_USER;
-const PASSWORD = import.meta.env.VITE_API_PASSWORD;
+const BFF_BASE_URL = "http://localhost:3001/api";
 
-const API_BASE_URL = "https://amalaundry.com.au/wp-json";
+const fetchData = async (endpoint) => {
+  try {
+    const response = await fetch(`${BFF_BASE_URL}/${endpoint}`);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok for ${endpoint}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to fetch ${endpoint}:`, error);
+    return [];
+  }
+};
+
+export const fetchServices = () => fetchData("services");
+export const fetchCamps = () => fetchData("camps");
+export const fetchPickupSlots = () => fetchData("pickup_slots");
+export const fetchPaymentMethods = () => fetchData("payment_methods");
 
 /**
- * The main function to submit an order.
- * It uses Basic Authentication with an Application Password.
- * This replaces the previous JWT token logic.
+ * Submits the pre-formatted order payload to the BFF.
+ * @param {object} payload - The complete order object.
+ * @returns {Promise<object>}
  */
-export const submitLaundryOrder = async (orderData) => {
+export const submitOrder = async (payload) => {
   try {
-    // 1. Create the Basic Authentication header.
-    // This is a single, secure step that replaces the old getAuthToken() call.
-    const headers = {
-      "Content-Type": "application/json",
-      // The 'Authorization' header tells WordPress that this is a trusted application.
-      Authorization: `Basic ${base64.encode(`${USERNAME}:${PASSWORD}`)}`,
-    };
-
-    // 2. Use the new secure endpoint from the plugin to submit the order.
-    console.log("📦 Submitting order payload with Basic Auth:", orderData);
-    const response = await fetch(`${API_BASE_URL}/ama/v1/orders`, {
+    const response = await fetch(`${BFF_BASE_URL}/orders`, {
       method: "POST",
-      headers: headers,
-      body: JSON.stringify(orderData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Server rejected the order submission:", errorData);
-      throw new Error(
-        errorData.message || "Server rejected the order submission."
-      );
+      const errorBody = await response.json().catch(() => ({}));
+      throw new Error(errorBody.message || "Order submission failed");
     }
 
-    console.log("✅ Order submitted successfully.");
     return await response.json();
   } catch (error) {
-    console.error("❌ Submission process failed:", error);
-    // Re-throw the error to be caught by the calling hook/component
+    console.error("Error submitting order:", error);
     throw error;
   }
 };

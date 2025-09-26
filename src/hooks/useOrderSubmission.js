@@ -1,60 +1,49 @@
 import { useState } from "react";
-import { submitLaundryOrder } from "../utils/api"; // Correctly import your API function
+import { submitOrder as apiSubmitOrder } from "../utils/api";
 
-export default function useOrderSubmission() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+export const useOrderSubmission = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState(null);
+  const [submittedOrder, setSubmittedOrder] = useState(null);
 
-  const submitOrder = async (orderData) => {
-    setLoading(true);
-    setError(null);
-
-    // --- Payload creation is the same as your original code ---
-    const pickupMethodLabel =
-      orderData.fields?.pickup_method === "inside"
-        ? "Inside Room"
-        : "Outside Door";
+  const submit = async (orderData) => {
+    setIsSubmitting(true);
+    setSubmissionError(null);
 
     const payload = {
-      title:
-        orderData.title ||
-        `Laundry Order for Room ${orderData.fields?.room_number || "Unknown"}`,
+      title: `Order for ${orderData.customer_name} - Room ${orderData.room_number}`,
       status: "publish",
       acf: {
-        room_number: orderData.fields?.room_number,
-        service_id: orderData.fields?.service_id,
-        pickup_method: pickupMethodLabel,
-        slot_id: orderData.fields?.slot_id,
-        camp_name: [parseInt(orderData.fields?.camp_id, 10)],
-        customer_name: orderData.fields?.customer_name,
-        Special_Instructions: orderData.fields?.special_instructions,
-        total_price: orderData.fields?.total_price,
-        services: orderData.fields?.services,
-        camp_id: orderData.fields?.camp_id,
-        pickup_slot: orderData.fields?.pickup_slot,
-        order_timestamp: new Date().toLocaleString("en-AU"),
+        room_number: orderData.room_number,
+        service_id: orderData.service_id,
+        pickup_method: orderData.pickup_method,
+        slot_id: orderData.slot_id,
+        camp_name: orderData.camp_name,
+        customer_name: orderData.customer_name,
+        special_instructions: orderData.special_instructions,
+        total_price: orderData.total_price,
+        services: orderData.services,
+        service_names: orderData.service_names,
+        order_status: "pending",
+        order_timestamp: new Date().toISOString(),
       },
     };
 
-    console.log("📦 Submitting order payload:", payload);
+    console.log("📦 Simplified payload:", payload);
 
     try {
-      // --- This now calls your secure api.js function ---
-      const result = await submitLaundryOrder(payload);
-
-      setData(result);
-      return { success: true, order: result };
-    } catch (err) {
-      console.error("⚠️ Submission failed:", err);
-      const errorMessage =
-        err.message || "Could not place your order. Please try again.";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+      const result = await apiSubmitOrder(payload);
+      setSubmittedOrder(result);
+      return result;
+    } catch (error) {
+      setSubmissionError(
+        error.message || "An unknown submission error occurred."
+      );
+      throw error;
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  return { submitOrder, loading, error, data };
-}
+  return { isSubmitting, submissionError, submittedOrder, submit };
+};
